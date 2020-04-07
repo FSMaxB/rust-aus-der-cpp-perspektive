@@ -12,6 +12,22 @@
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
+		<style>
+			.comparison {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-gap: 10px;
+				grid-auto-rows: minmax(100px, auto);
+			}
+
+			.comparison-left {
+				grid-column: 1;
+			}
+
+			.comparison-right {
+				grid-column: 2;
+			}
+		</style>
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -25,8 +41,156 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+
+
+				<section>
+					<div data-markdown>
+						<script data-markdown type="text/template">
+							# Rust aus der C++-Perspektive
+							_Max Bruckner_
+						</script>
+					</div>
+				</section>
+
+
+				<section>
+					<div data-markdown>
+						<script data-markdown type="text/template">
+							## Warnung
+							Dieser Vortrag ist nicht unvoreingenommen
+
+							![rust logo](rust.svg)
+						</script>
+					</div>
+				</section>
+
+
+				<section>
+					<div data-markdown>
+						<script data-markdown type="text/template">
+							<h2>Werbung</h2>
+							Guter Talk zum gleichen Thema
+
+							[https://cpp-ug-dresden.blogspot.com/2020/03/april-talk-hendrik-sollich-rust-for-cpp.html](https://cpp-ug-dresden.blogspot.com/2020/03/april-talk-hendrik-sollich-rust-for-cpp.html)
+						</script>
+					</div>
+				</section>
+
+
+				<section>
+					<div data-markdown>
+						<script data-markdown type="text/template">
+							## Was ist Rust?
+							<q>A language empowering everyone to build reliable and efficient software.</q>
+							(rust-lang.org)
+
+							<q>Safety and expressibility without sacrificing (runtime) performance.</q>
+						</script>
+					</div>
+				</section>
+
+
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Sprachentwicklung
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++
+								* Standards-Kommittee
+								* Alle 3 Jahre
+								* Einreichen von Papers
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Rust
+								* Community
+								* Entwicklung auf GitHub via RFCs
+								* 6 Wochen Release-Cycle
+								* Editions
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Release Channels
+								* Nightly
+									* unstable features
+								* Beta
+								* Stable
+							</script>
+						</div>
+					</section>
+				</section>
+
+
+				<section>
+					<h2>Themen</h2>
+					<ul>
+						<li>"Rustaceans", wie nennen sich C++-Entwickler nochmal?</li>
+						<li>Language Development (Committee vs. Community)</li>
+						<li>Nightly/Beta/Stable features lurking for years</li>
+						<li>Editions</li>
+						<li>Ecosystem (build system, package management, Unit-Tests, filesystem tree structure, modules, cargo fmt)</li>
+						<li>Libraries compose very well togther (counter example: Qt)</li>
+						<ul>
+							<li>chrono</li>
+							<li>log</li>
+							<li>serde</li>
+							<li>futures</li>
+						</ul>
+						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
+						<li>ABI</li>
+						<li>"Variable Bindings"</li>
+						<li>Breaking changes</li>
+						<li>String types</li>
+						<li>slices</li>
+						<li>Chaining Traits (e.g. Display → ToString)</li>
+						<li>Inheritance vs. Traits (IntoUrl example)</li>
+						<li>Turbofish vs. Most vexing parse + (type syntax)</li>
+						<li>Const by default</li>
+						<li>Move semantics</li>
+						<li>Clone trait vs. other stuff</li>
+						<li>Trennung zwischen Functionality and Data</li>
+						<li>constexpr vs. const</li>
+						<li>Trait-Based generics vs. Templates</li>
+						<li>Monomorphisation and dynamic dispatch</li>
+						<li>Hygienic Macros</li>
+						<li>Procedural Macros ←→ Meta-Classes, Reflection?</li>
+						<li>Modern C++</li>
+						<li>RAII</li>
+						<li>Let the compiler work for you (type system)</li>
+						<li>Ownership and Borrowing</li>
+						<li>circular data structures impossible without unsafe → Pin</li>
+						<li>Zero Cost Abstractions</li>
+						<li>shared_ptr ←→ Rc/Arc </li>
+						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
+						<li>Summentypen std::variant vs. Enum</li>
+						<li>Pattern-Matching, destructuring</li>
+						<li>Coroutines/Generators</li>
+						<li>Traits/Concepts</li>
+						<li>if-expressions (immediately invoked lambdas)</li>
+						<li>poll based futures, async-await</li>
+						<li>Send + Sync</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Quellen</h2>
+					<ul>
+						<li>https://en.wikipedia.org/wiki/C%2B%2B</li>
+						<li>https://en.wikipedia.org/wiki/Rust_(programming_language)</li>
+						<li>https://commons.wikimedia.org/wiki/File:Rust_programming_language_black_logo.svg</li>
+					</ul>
+				</section>
 			</div>
 		</div>
 
@@ -37,6 +201,8 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+				width: 1280,
+				height: 720,
 				hash: true,
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
