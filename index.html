@@ -112,10 +112,11 @@
 						<div data-markdown>
 							<script data-markdown type="text/template">
 								### Rust
-								* Community
+								* Community (<q>Rustaceans</q>)
 								* Entwicklung auf GitHub via RFCs
 								* 6 Wochen Release-Cycle
 								* Editions
+								![rust mascot ferris](ferris.svg)
 							</script>
 						</div>
 					</section>
@@ -125,8 +126,155 @@
 								### Release Channels
 								* Nightly
 									* unstable features
+									* (teils Jahrelang)
 								* Beta
 								* Stable
+							</script>
+						</div>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Abwärtskompatibilität
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++
+								* C-Kompatibel <small>größtenteils</small>
+								* Stabile Syntax + Semantik <small>fast</small>
+								* Stabile ABI
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Rust
+								* Syntax-Break in 2018-Edition
+									- aber Binärkompatibel
+								* **Keine stabile ABI** <small>Ausnahmen!</small>
+									- ~~redistributable binary libraries~~
+								* Sicherheit > Kompatibilität
+									* [std::mem::uninitialized](https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html#maybeuninitt%3E-instead-of-mem::uninitialized)
+									* [alter borrowchecker](https://blog.rust-lang.org/2019/11/01/nll-hard-errors.html)
+								* [crater](https://github.com/rust-lang/crater)
+							</script>
+						</div>
+					</section>
+				</section>
+
+
+				<section>
+					<h1>TODO: Ecosystem</h1>
+				</section>
+
+
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								# Ownership
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Value-Semantik
+								**C++**
+								```cpp
+								void print(std::vector<int> numbers) {
+									for (auto number : numbers) {
+										std::cout << number << ' ';
+									}
+									std::cout << '\n';
+								}
+								```
+
+								**Rust**
+								```rust
+								fn print(numbers: Vec<i32>) {
+									for number in numbers {
+										print!("{} ", number);
+									}
+									println!();
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++
+								**implizite Kopie**
+								```cpp
+								auto numbers = std::vector<int>{1, 2, 3, 4};
+								print(numbers); // -> "1 2 3 4 "
+								print(numbers); // -> "1 2 3 4 "
+								```
+
+								**Move**
+								```cpp
+								auto numbers = std::vector<int>{1, 2, 3, 4};
+								print(std::move(numbers)); // -> "1 2 3 4 "
+								// number ist in "valid but unspecified state"
+								print(std::mvoe(numbers)); // -> " "
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Rust
+								```rust
+								let numbers = vec![1, 2, 3, 4];
+								by_value(numbers);
+								print(&numbers);
+								```
+
+								```
+								  --> src/main.rs:20:8
+								   |
+								18 |     let numbers = vec![1, 2, 3, 4];
+								   |         ------- move occurs because `numbers` has type `std::vec::Vec<i32>`, which does not implement the `Copy` trait
+								19 |     by_value(numbers);
+								   |              ------- value moved here
+								20 |     print(&numbers);
+								   |           ^^^^^^^^ value borrowed here after move
+								```
+								**Ownership wird <q>by value</q> übergeben**
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Rust
+								**Clone**
+								```rust
+								let numbers = vec![1, 2, 3, 4];
+								by_value(numbers.clone()); // explizite Kopie -> 1 2 3 4
+								print(&numbers); -> 1 2 3 4
+								```
+
+								**Move**
+								```rust
+								let numbers = vec![1, 2, 3, 4];
+								by_value(numbers);
+								// numbers ist weg
+								// wir sind nicht mehr "Owner"
+								```
+
+
+								**Ownership wird <q>by value</q> übergeben**
 							</script>
 						</div>
 					</section>
@@ -136,10 +284,6 @@
 				<section>
 					<h2>Themen</h2>
 					<ul>
-						<li>"Rustaceans", wie nennen sich C++-Entwickler nochmal?</li>
-						<li>Language Development (Committee vs. Community)</li>
-						<li>Nightly/Beta/Stable features lurking for years</li>
-						<li>Editions</li>
 						<li>Ecosystem (build system, package management, Unit-Tests, filesystem tree structure, modules, cargo fmt)</li>
 						<li>Libraries compose very well togther (counter example: Qt)</li>
 						<ul>
@@ -148,10 +292,10 @@
 							<li>serde</li>
 							<li>futures</li>
 						</ul>
+						<li>(number) types</li>
+						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
-						<li>ABI</li>
 						<li>"Variable Bindings"</li>
-						<li>Breaking changes</li>
 						<li>String types</li>
 						<li>slices</li>
 						<li>Chaining Traits (e.g. Display → ToString)</li>
@@ -168,11 +312,11 @@
 						<li>Procedural Macros ←→ Meta-Classes, Reflection?</li>
 						<li>Modern C++</li>
 						<li>RAII</li>
+						<li>shared_ptr ←→ Rc/Arc </li>
+						<li>Zero Cost Abstractions</li>
 						<li>Let the compiler work for you (type system)</li>
 						<li>Ownership and Borrowing</li>
 						<li>circular data structures impossible without unsafe → Pin</li>
-						<li>Zero Cost Abstractions</li>
-						<li>shared_ptr ←→ Rc/Arc </li>
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
 						<li>Summentypen std::variant vs. Enum</li>
 						<li>Pattern-Matching, destructuring</li>
@@ -189,6 +333,10 @@
 						<li>https://en.wikipedia.org/wiki/C%2B%2B</li>
 						<li>https://en.wikipedia.org/wiki/Rust_(programming_language)</li>
 						<li>https://commons.wikimedia.org/wiki/File:Rust_programming_language_black_logo.svg</li>
+						<li>https://commons.wikimedia.org/wiki/File:Rustacean-orig-noshadow.svg</li>
+						<li>https://blog.rust-lang.org/2019/11/01/nll-hard-errors.html</li>
+						<li>https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html#maybeuninitt%3E-instead-of-mem::uninitialized</li>
+						<li>https://en.cppreference.com/w/cpp/utility/move</li>
 					</ul>
 				</section>
 			</div>
