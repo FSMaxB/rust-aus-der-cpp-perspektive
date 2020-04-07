@@ -282,6 +282,113 @@
 
 
 				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								# Borrowing
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Shared borrow
+								```rust
+								let numbers = vec![1, 2, 3, 4];
+								let one = &numbers[0];
+								print(numbers);
+								println!("{}", one);
+								```
+
+								```
+								error[E0505]: cannot move out of `numbers` because it is borrowed
+								  --> src/main.rs:9:8
+								   |
+								8  |     let one = &numbers[0];
+								   |                ------- borrow of `numbers` occurs here
+								9  |     print(numbers);
+								   |           ^^^^^^^ move out of `numbers` occurs here
+								10 |     println!("{}", one);
+								   |                    --- borrow later used here
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Mutable borrow
+								```rust
+								let mut numbers = vec![1, 2, 3, 4];
+								let one = &numbers[0];
+								numbers.push(5);
+								println!("{}", one);
+								```
+
+								```
+								error[E0502]: cannot borrow `numbers` as mutable because it is also borrowed as immutable
+								  --> src/main.rs:9:2
+								   |
+								8  |     let one = &numbers[0];
+								   |                ------- immutable borrow occurs here
+								9  |     numbers.push(5);
+								   |     ^^^^^^^^^^^^^^^ mutable borrow occurs here
+								10 |     println!("{}", one);
+								   |                    --- immutable borrow later used here
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								**Der Compiler als Freund und Helfer**
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Horror-Szenario
+								```cpp
+								auto numbers = std::vector<int>{1, 2, 3, 4};
+								for (auto number : numbers) {
+									numbers.push_back(number + 1); // UB
+								}
+								print(numbers); // 1 2 3 4 2 1 -1739165679 21979
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								```rust
+								let mut numbers = vec![1, 2, 3, 4];
+								for number in &numbers {
+									numbers.push(number + 1);
+								}
+								```
+
+								```
+								error[E0502]: cannot borrow `numbers` as mutable because it is also borrowed as immutable
+								 --> src/main.rs:9:3
+								  |
+								8 |     for number in &numbers {
+								  |                   --------
+								  |                   |
+								  |                   immutable borrow occurs here
+								  |                   immutable borrow later used here
+								9 |         numbers.push(number + 1);
+								  |         ^^^^^^^^^^^^^^^^^^^^^^^^ mutable borrow occurs here
+								```
+							</script>
+						</div>
+					</section>
+				</section>
+
+
+				<section>
 					<h2>Themen</h2>
 					<ul>
 						<li>Ecosystem (build system, package management, Unit-Tests, filesystem tree structure, modules, cargo fmt)</li>
