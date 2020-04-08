@@ -808,6 +808,80 @@
 							</script>
 						</div>
 					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Zum Schluss: Closures
+								```rust
+								let closure = |a, b| {
+									a * b
+								};
+								```
+
+								```rust
+								let closure = |x| x * x;
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								**Borrowing**
+								```rust
+								let text = String::from("hello");
+								let closure = || println!("{}", text);
+								closure(); // -> "text"
+								// text ist hier noch gültig
+								println!("{}", text);
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								**Borrowing**
+								```rust
+								let closure;
+								{
+									let text = String::from("text");
+									closure = || println!("{}", text);
+								}
+								closure();
+								```
+
+								```
+								error[E0597]: `text` does not live long enough
+								 --> src/main.rs:5:31
+								  |
+								5 |         closure = || println!("{}", text);
+								  |                   --                ^^^^ borrowed value does not live long enough
+								  |                   |
+								  |                   value captured here
+								6 |     }
+								  |     - `text` dropped here while still borrowed
+								7 |     closure();
+								  |     ------- borrow later used here
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								**Owning**
+								```rust
+								let closure;
+								{
+									let text = String::from("text");
+									closure = move || println!("{}", text);
+								}
+								closure(); // -> "text"
+								```
+							</script>
+						</div>
+					</section>
 				</section>
 
 				<section>
@@ -1051,11 +1125,69 @@
 					</section>
 				</section>
 
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## `Send`/`Sync` (thread safety)
+
+								* `unsafe` Marker-Traits
+								* `Send`
+									* Ein Typ darf eine Thread-Grenze überschreiten
+								* `Sync`
+									* Eine Referenz auf einen Typ darf eine Thread-Grenze überschreiben
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Beispiel: `Rc`
+
+								```rust
+								let reference_counted_number = Rc::new(42);
+								std::thread::spawn(move || {
+									println!("{}", reference_counted_number);
+								});
+								```
+
+								```
+								error[E0277]: `std::rc::Rc<i32>` cannot be shared between threads safely
+								   --> src/main.rs:5:2
+								    |
+								5   |     std::thread::spawn(move || {
+								    |     ^^^^^^^^^^^^^^^^^^ `std::rc::Rc<i32>` cannot be shared between threads safely
+								    |
+								    = help: the trait `std::marker::Sync` is not implemented for `std::rc::Rc<i32>`
+								```
+
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Lösung: `Arc`
+
+								```rust
+								let atomically_reference_counted_number = Acc::new(42);
+								std::thread::spawn(move || {
+									println!("{}", atomically_reference_counted_number);
+								});
+								```
+
+								**You don't pay for what you don't use**
+
+								<small>* hust * std::shared_ptr * hust *</small>
+							</script>
+						</div>
+					</section>
+				</section>
+
 
 				<section>
 					<h2>Themen</h2>
 					<ul>
-						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
 						<li>"Variable Bindings"</li>
 						<li>Const by default</li>
@@ -1070,7 +1202,6 @@
 						<li>Coroutines/Generators</li>
 						<li>if-expressions (immediately invoked lambdas)</li>
 						<li>poll based futures, async-await</li>
-						<li>Send + Sync</li>
 					</ul>
 				</section>
 				<section>
