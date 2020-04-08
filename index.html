@@ -1186,6 +1186,87 @@
 
 
 				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Iterators
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### `Iterator`-Trait
+
+								```rust
+								trait Iterator {
+									type Item; // Associated type
+
+									fn next(&mut self) -> Option<Self::Item>;
+
+									/* ganz viele Default-Implementierte Methoden */
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Beispiel: Counter
+
+								```rust
+								#[derive(Default)]
+								struct Counter{counter: usize};
+
+								impl Iterator for Counter {
+									type Item = usize;
+
+									fn next(&mut self) -> Option<usize> {
+										let count = self.0;
+										self.0 += 1; // overflow, ich weiß!
+										Some(count)
+									}
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Beispiel: Counter
+
+								```rust
+								let counter = Counter::default();
+								for number in counter {
+									println!("{}", number); // -> 0 1 2 3 .... (Endlosschleife)
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Beispiel: Counter
+
+								```rust
+								let counter = Counter::default();
+								let ten_squares = counter
+									.map(|number| number * number)
+									.take(10)
+									.collect::<Vec<usize>>()
+
+								// vec![0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+								```
+							</script>
+						</div>
+					</section>
+				</section>
+
+
+				<section>
 					<h2>Themen</h2>
 					<ul>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
@@ -1195,7 +1276,6 @@
 						<li>Hygienic Macros</li>
 						<li>Procedural Macros ←→ Meta-Classes, Reflection?</li>
 						<li>RAII</li>
-						<li>shared_ptr ←→ Rc/Arc </li>
 						<li>Zero Cost Abstractions</li>
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
 						<li>Error-Handling</li>
