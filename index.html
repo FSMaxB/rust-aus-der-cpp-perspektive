@@ -885,6 +885,56 @@
 							</script>
 						</div>
 					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++ Concepts
+								* Mächtiger als Traits
+								* Unangenehmere Syntax
+								* Verhindern kein Duck-Typing
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++ Concept Duck-Typing
+								```cpp
+								template <typename T>
+								concept Named = requires(T t) {
+									{ t.name() } -> std::same_as<std::string_view>;
+								};
+
+								struct Duck {
+									std::string m_name;
+
+									std::string_view name() const { return std::string_view(this->m_name); }
+
+									void quack() { std::cout << "Quack!\n"; }
+								};
+								```
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++ Concept Duck-Typing
+								```cpp
+								template <Named T>
+								void quack(T duck) {
+									// Nach meinem Verständnis sollte das so kompilieren
+									duck.quack();
+								}
+								```
+								Der Compiler
+								* hilft dem Nutzer <small>(Fehler wenn concept nicht erfüllt)</small>
+								* hilft **nicht** dem Autor <small>(verhindert nicht, funktionen außerhalb des Concepts benutzt)</small>
+								<small>Sprich man kann templates bauen, die nicht mit allen Typen kompilieren, selbst wenn sich der Nutzer an die Concepts hält.</small>
+							</script>
+						</div>
+					</section>
 				</section>
 
 
@@ -906,7 +956,6 @@
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
 						<li>Error-Handling</li>
 						<li>Coroutines/Generators</li>
-						<li>Traits/Concepts</li>
 						<li>if-expressions (immediately invoked lambdas)</li>
 						<li>poll based futures, async-await</li>
 						<li>Send + Sync</li>
