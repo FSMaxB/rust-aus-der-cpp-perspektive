@@ -276,6 +276,15 @@
 							</script>
 						</div>
 					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								**Move darf immer `memcpy` sein**
+
+								<small>C++: [trivially relocatable](https://quuxplusone.github.io/blog/2018/07/18/announcing-trivially-relocatable/)</small>
+							</script>
+						</div>
+					</section>
 				</section>
 
 
@@ -385,6 +394,249 @@
 					</section>
 				</section>
 
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								# Datentypen
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Primitive
+								* Ganzzahlen:
+									- `i8` / `u8`
+									- `i16` / `u16`
+									- `i32` / `u32`
+									- `i64` / `u64`
+									- `i128` / `u128`
+								* Maschinenspezifisch: `isize` / `usize`
+								* Fließkommazahlen: `f32` / `f64`
+								* Boolean: `bool`
+								* Unicode-Scalar: `char`
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								<h3><q>Collections</q></h3>
+
+								**Tupel**
+								```rust
+								let point: (f64, f64) = (1.0, 2.0);
+								println!("({}, {})", point.0, point.1);
+								let (x, y) = point;
+								```
+
+								**Array**
+								```rust
+								let point: [f64; 2] = [1.0, 2.0];
+								println!("({}, {})", point[0], point[1]);
+								let [x, y] = point;
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Slices
+
+								```rust
+								let numbers = [1, 2, 3, 4]; // <- array
+								let middle: &[i32] = &numbers[1..3]; // borrow -> slice
+								// Pointer + Länge
+								println!("{}", middle.len()) // -> 2
+								```
+
+								**C++:** `std::span`(?)
+
+							</script>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Strings
+
+								```rust
+								let owned = String::from("hello");
+								let static_str: &'static str = "hello";
+								let borrowed: &str = string.as_str();
+								let cow = Cow::Owned(owned);
+								```
+
+								* keine small string optimisation
+								* **C++:** `std::string` + `std::string_view`
+
+							</script>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Structs
+								```rust
+								struct Point {
+									x: f64,
+									y: f64,
+								}
+
+								let point = Struct {x: 1.0, y: 2.0};
+								println!("({}, {})", point.x, point.y);
+								let Struct { x, y } = point;
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Enums
+								**C++**
+								```cpp
+								enum class NonColors {
+									BLACK,
+									WHITE,
+								};
+
+								auto non_color = NonColors::BLACK;
+								auto number = static_cast<int>(non_color);
+								```
+
+								**Rust**
+								```rust
+								enum NonColors {
+									Black,
+									White,
+								}
+
+								let non_color = NonColors::Black;
+								// Keine definierte Repräsentation
+								```
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### typisierte Enums
+
+								**C++**
+								```cpp
+								enum class NonColors : uint8_t {
+									BLACK,
+									WHITE,
+								};
+
+								auto non_color = NonColors::BLACK;
+								auto number = static_cast<uint8_t>(non_color);
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### repr Enums
+
+								**Rust**
+								```rust
+								#[repr(u8)]
+								enum NonColors {
+									Black,
+									White,
+								}
+
+								let non_color = NonColors::Black;
+								let number: u8 = unsafe { std::mem::transmute(non_color) };
+								// transmute ist wie reinterpret_cast
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Echte Summentypen
+
+								```rust
+								// enum mit associated values
+								enum Color {
+									Grayscale(u8),
+									Rgb(u8, u8, u8),
+									Rgba{red: u8, green: u8, blue: u8, alpha: u8},
+									Black,
+									White,
+								}
+								```
+
+								```rust
+								match color {
+									Color::Grayscale(intensity) => {},
+									Color::Rgb(red, green, blue) => {},
+									Color::Rgba { red, green, blue, alpha } => {},
+									Color::Black => {}
+									_ => {}
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### `std::variant` <small>fast, aber nicht ganz</small>
+
+								```cpp
+								// vereinfacht mit weniger cases
+								using GrayScale = uint8_t;
+								using Rgb = std::tuple<uint8_t, uint8_t, uint8_t>;
+								using Color = std::variant<GrayScale,Rgb>;
+								```
+
+								```cpp
+								switch (color.index()) {
+									case 0: {
+										auto grayscale_by_index = std::get<0>(color);
+										auto grayscale_by_type = std::get<GrayScale>(color);
+										break;
+									}
+									case 1: {
+										auto [red, green, blue] = std::get<Rgb>(color);
+										break;
+									}
+									default: // other cases
+										break;
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Besser mit `std::visit`
+								```cpp
+								template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+								template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+								std::visit(overloaded {
+									[](Rgb rgb) {
+										auto [red, green, blue] = rgb;
+									},
+									[](GrayScale grayscale) {}
+								},
+										color);
+								```
+								https://en.cppreference.com/w/cpp/utility/variant
+							</script>
+						</div>
+					</section>
+				</section>
+
 
 				<section>
 					<h2>Themen</h2>
@@ -397,15 +649,13 @@
 							<li>serde</li>
 							<li>futures</li>
 						</ul>
-						<li>(number) types</li>
 						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
 						<li>"Variable Bindings"</li>
 						<li>String types</li>
-						<li>slices</li>
 						<li>Chaining Traits (e.g. Display → ToString)</li>
 						<li>Inheritance vs. Traits (IntoUrl example)</li>
-						<li>Turbofish vs. Most vexing parse + (type syntax)</li>
+						<li>Turbofish</li>
 						<li>Const by default</li>
 						<li>Move semantics</li>
 						<li>Clone trait vs. other stuff</li>
@@ -419,12 +669,11 @@
 						<li>RAII</li>
 						<li>shared_ptr ←→ Rc/Arc </li>
 						<li>Zero Cost Abstractions</li>
-						<li>Let the compiler work for you (type system)</li>
 						<li>Ownership and Borrowing</li>
 						<li>circular data structures impossible without unsafe → Pin</li>
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
-						<li>Summentypen std::variant vs. Enum</li>
-						<li>Pattern-Matching, destructuring</li>
+						<li>Operator overloading</li>
+						<li>Error-Handling</li>
 						<li>Coroutines/Generators</li>
 						<li>Traits/Concepts</li>
 						<li>if-expressions (immediately invoked lambdas)</li>
@@ -433,16 +682,20 @@
 					</ul>
 				</section>
 				<section>
-					<h2>Quellen</h2>
-					<ul>
-						<li>https://en.wikipedia.org/wiki/C%2B%2B</li>
-						<li>https://en.wikipedia.org/wiki/Rust_(programming_language)</li>
-						<li>https://commons.wikimedia.org/wiki/File:Rust_programming_language_black_logo.svg</li>
-						<li>https://commons.wikimedia.org/wiki/File:Rustacean-orig-noshadow.svg</li>
-						<li>https://blog.rust-lang.org/2019/11/01/nll-hard-errors.html</li>
-						<li>https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html#maybeuninitt%3E-instead-of-mem::uninitialized</li>
-						<li>https://en.cppreference.com/w/cpp/utility/move</li>
-					</ul>
+					<div data-markdown>
+						<script data-markdown type="text/template">
+							## Quellen
+							* https://en.wikipedia.org/wiki/C%2B%2B
+							* https://en.wikipedia.org/wiki/Rust_(programming_language)
+							* https://commons.wikimedia.org/wiki/File:Rust_programming_language_black_logo.svg
+							* https://commons.wikimedia.org/wiki/File:Rustacean-orig-noshadow.svg
+							* https://blog.rust-lang.org/2019/11/01/nll-hard-errors.html
+							* https://blog.rust-lang.org/2019/07/04/Rust-1.36.0.html#maybeuninitt%3E-instead-of-mem::uninitialized
+							* https://en.cppreference.com/w/cpp/utility/move
+							* https://quuxplusone.github.io/blog/2018/07/18/announcing-trivially-relocatable/
+							* https://en.cppreference.com/w/cpp/utility/variant
+						</script>
+					</div>
 				</section>
 			</div>
 		</div>
