@@ -259,6 +259,94 @@
 					</section>
 				</section>
 
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Safety Guarantees
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### `unsafe`
+								```rust
+								unsafe {
+									// Hier drinnen kann man böse Dinge tun
+								}
+
+								unsafe fn bla() {
+									// Hier drin kann man böse Dinge tun
+								}
+								```
+								In C/C++ ist das ganze Programm in einem `unsafe`-Block
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### safe/unsafe
+								* Kein undefined behavior in safe rust ([Ausnahmen](https://github.com/rust-lang/rust/issues?q=is%3Aopen+is%3Aissue+label%3A%22I-unsound+%F0%9F%92%A5%22))
+								* Safe-Abstractions
+									- z.B. `Rc`/`Arc` (`std::shared_ptr`)
+									- z.B. `Box` (`std::unique_ptr`)
+								* **Verpflichtung** an den Autor <small>einhalten der Garantien</small>
+								* Keine Data-Races (dank ownership + borrowing)
+								* Nur Subset sicherer Operationen
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Safety > Performance
+								* C++
+									* `std::vector::operator[too_large]` → undefined
+									* `std::vector::at(too_large)` -> Exception
+								* Rust
+									* `Vec[too_large]` -> panic
+
+								```rust
+								// "langsam"
+								for index in (0..vetor.len()) {
+									let element = vector[index]; // bounds-check
+								}
+
+								// schnell
+								for element in &vector {
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Sinnvolle Defaults
+								* Immutable by default
+									* `mut`
+								* Private by default
+									* `pub`
+								* Keine Impliziten Casts/overload resolution<small>es gibt gar keine Overloads</small>
+									* explizit per Traits -> Ergonomie bleibt erhalten
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								Compiler als Safeguard
+
+								⇓
+
+								Man kann sich auf seine Aufgabe konzentrieren
+							</script>
+						</div>
+					</section>
+				</section>
+
 
 				<section>
 					<section>
@@ -377,7 +465,7 @@
 					<section>
 						<div data-markdown>
 							<script data-markdown type="text/template">
-								# Borrowing
+								## Borrowing
 							</script>
 						</div>
 					</section>
@@ -781,6 +869,7 @@
 								### Wichtige Traits
 								* `Default`
 								* `Clone`
+								* `Drop` (RAII)
 								* Operatoren (`Add`, `Mul`, `Eq`, `Index` ...)
 								* Marker (`Copy`, `Send`, `Synced` ..., dazu später)
 							</script>
@@ -944,7 +1033,6 @@
 						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
 						<li>"Variable Bindings"</li>
-						<li>Inheritance vs. Traits (IntoUrl example)</li>
 						<li>Const by default</li>
 						<li>constexpr vs. const</li>
 						<li>Hygienic Macros</li>
@@ -952,7 +1040,6 @@
 						<li>RAII</li>
 						<li>shared_ptr ←→ Rc/Arc </li>
 						<li>Zero Cost Abstractions</li>
-						<li>circular data structures impossible without unsafe → Pin</li>
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
 						<li>Error-Handling</li>
 						<li>Coroutines/Generators</li>
@@ -974,6 +1061,7 @@
 							* https://en.cppreference.com/w/cpp/utility/move
 							* https://quuxplusone.github.io/blog/2018/07/18/announcing-trivially-relocatable/
 							* https://en.cppreference.com/w/cpp/utility/variant
+							* https://en.cppreference.com/w/cpp/language/constraints
 						</script>
 					</div>
 				</section>
