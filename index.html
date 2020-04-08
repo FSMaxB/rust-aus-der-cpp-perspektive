@@ -171,7 +171,92 @@
 
 
 				<section>
-					<h1>TODO: Ecosystem</h1>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Ökosystem als Teil der Sprache
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### C++
+								Nur die Sprache + Standardlibrary sind einheitlich.
+
+								Verschieden sind:
+								* Compiler
+								* Build-Systeme
+								* Paketmanager
+								* Paket-Registries
+								* Plattform-Toolchains
+								* Sanitizer
+								* Linter
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Rust
+								* Ein Compiler
+								* Cargo:
+									* Build-System
+									* Dependency-Manager
+								* Rustup (Toolchain-Manager)
+								* Clippy linter
+								* crates.io: Paket-Registry
+								* rustfmt: Code-Formatter
+								* ...
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Libraries <q>crates</q>
+								`Cargo.toml`
+								```toml
+								[package]
+								name = "rust-scratchpad"
+								version = "0.1.0"
+								authors = ["Max Bruckner <max@maxbruckner.de>"]
+								edition = "2018"
+
+								# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+								[dependencies]
+								tokio = {version = "0.2", features = ["full"]}
+								futures = "0.3"
+								serde = {version = "1.0", features = ["derive"]}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								Oft werden Domain-Spezifische Typen ausgelagert:
+								```rust
+								// log
+								error!("Logging an error");
+
+								// http
+								let status = StatusCode::NOT_FOUND;
+
+								// serde
+								#[derive(Serialize, Deserialize)]
+								struct Name {first: String, last: String}
+								// to and from {"first": ..., "last": ...} using serde_json
+								// (JSON, YAML, TOML, MessagePack, Pickle ...)
+
+								// url
+								let url = Url::parse("https://example.com").unwrap();
+
+								```
+							</script>
+						</div>
+					</section>
 				</section>
 
 
@@ -641,23 +726,12 @@
 				<section>
 					<h2>Themen</h2>
 					<ul>
-						<li>Ecosystem (build system, package management, Unit-Tests, filesystem tree structure, modules, cargo fmt)</li>
-						<li>Libraries compose very well togther (counter example: Qt)</li>
-						<ul>
-							<li>chrono</li>
-							<li>log</li>
-							<li>serde</li>
-							<li>futures</li>
-						</ul>
 						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
 						<li>"Variable Bindings"</li>
-						<li>String types</li>
 						<li>Chaining Traits (e.g. Display → ToString)</li>
 						<li>Inheritance vs. Traits (IntoUrl example)</li>
-						<li>Turbofish</li>
 						<li>Const by default</li>
-						<li>Move semantics</li>
 						<li>Clone trait vs. other stuff</li>
 						<li>Trennung zwischen Functionality and Data</li>
 						<li>constexpr vs. const</li>
