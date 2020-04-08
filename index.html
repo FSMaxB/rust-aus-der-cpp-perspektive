@@ -225,7 +225,7 @@
 								auto numbers = std::vector<int>{1, 2, 3, 4};
 								print(std::move(numbers)); // -> "1 2 3 4 "
 								// number ist in "valid but unspecified state"
-								print(std::mvoe(numbers)); // -> " "
+								print(std::move(numbers)); // -> " "
 								```
 							</script>
 						</div>
@@ -236,19 +236,20 @@
 								### Rust
 								```rust
 								let numbers = vec![1, 2, 3, 4];
-								by_value(numbers);
-								print(&numbers);
+								print(numbers);
+								print(numbers);
 								```
 
 								```
-								  --> src/main.rs:20:8
-								   |
-								18 |     let numbers = vec![1, 2, 3, 4];
-								   |         ------- move occurs because `numbers` has type `std::vec::Vec<i32>`, which does not implement the `Copy` trait
-								19 |     by_value(numbers);
-								   |              ------- value moved here
-								20 |     print(&numbers);
-								   |           ^^^^^^^^ value borrowed here after move
+								error[E0382]: use of moved value: `numbers`
+								 --> src/main.rs:9:8
+								  |
+								7 |     let numbers = vec![1, 2, 3, 4];
+								  |         ------- move occurs because `numbers` has type `std::vec::Vec<i32>`, which does not implement the `Copy` trait
+								8 |     print(numbers);
+								  |           ------- value moved here
+								9 |     print(numbers);
+								  |           ^^^^^^^ value used here after move
 								```
 								**Ownership wird <q>by value</q> übergeben**
 							</script>
@@ -261,20 +262,17 @@
 								**Clone**
 								```rust
 								let numbers = vec![1, 2, 3, 4];
-								by_value(numbers.clone()); // explizite Kopie -> 1 2 3 4
+								print(numbers.clone()); // explizite Kopie -> 1 2 3 4
 								print(&numbers); -> 1 2 3 4
 								```
 
 								**Move**
 								```rust
 								let numbers = vec![1, 2, 3, 4];
-								by_value(numbers);
+								print(numbers);
 								// numbers ist weg
 								// wir sind nicht mehr "Owner"
 								```
-
-
-								**Ownership wird <q>by value</q> übergeben**
 							</script>
 						</div>
 					</section>
