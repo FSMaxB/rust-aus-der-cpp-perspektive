@@ -571,7 +571,7 @@
 					<section>
 						<div data-markdown>
 							<script data-markdown type="text/template">
-								# Datentypen
+								## Datentypen
 							</script>
 						</div>
 					</section>
@@ -870,6 +870,7 @@
 								* `Default`
 								* `Clone`
 								* `Drop` (RAII)
+								* `From`/`Into`
 								* Operatoren (`Add`, `Mul`, `Eq`, `Index` ...)
 								* Marker (`Copy`, `Send`, `Synced` ..., dazu später)
 							</script>
@@ -970,6 +971,30 @@
 
 								let donald = Duck::default();
 								donalt.say_name(); // "Donald"
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### `From`/`Into`
+
+								```rust
+								impl From<String> for Duck {
+									fn from(name: String) -> Duck {
+										Duck { name }
+									}
+								}
+								impl From<&str> for Duck {
+									fn from(name: &str) -> Duck {
+										Duck { name: name.to_string() }
+									}
+								}
+
+								let string = String::from("string");
+								let duck_from_string = Duck::from(string);
+								let str_into_duck: Duck = "&str".into(); // automatisch für `From` implementiert
 								```
 							</script>
 						</div>
