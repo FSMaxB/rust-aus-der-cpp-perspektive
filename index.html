@@ -264,7 +264,7 @@
 					<section>
 						<div data-markdown>
 							<script data-markdown type="text/template">
-								# Ownership
+								## Ownership
 							</script>
 						</div>
 					</section>
@@ -722,6 +722,171 @@
 					</section>
 				</section>
 
+				<section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								## Traits
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								strikte Trennung von Daten und Funktionalität
+
+								```rust
+								struct Duck {name: String}
+
+								impl Duck {
+									// constructor
+									fn new(name: String) -> Duck {
+										Duck { name }
+									}
+
+									fn quack(&self) {
+										println!("Quack! I'm {}", name);
+									}
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Traits sind interfaces
+
+								```rust
+								// default constructor
+								trait Default {
+									fn default() -> Self;
+								}
+
+								impl Default for Duck {
+									fn default() -> Duck {
+										Duck { name: String::from("Donald") }
+									}
+								}
+
+								let donald = Duck::default();
+								donald.quack(); // -> "Quack! I'm Donald"
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Wichtige Traits
+								* `Default`
+								* `Clone`
+								* Operatoren (`Add`, `Mul`, `Eq`, `Index` ...)
+								* Marker (`Copy`, `Send`, `Synced` ..., dazu später)
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Generics
+								```rust
+								fn print<Text: ToString>(text: Text) {
+									// "to_string()" ist DIE EINZIGE Methode, die wir hier verwenden dürfen
+									// (anders als bei Templates)
+									println!("{}", text.to_string());
+								}
+
+								print(42);
+								print("hello");
+								```
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Monomorphisation
+								```rust
+								// Erzeugt 3 verschiedene Funktionen im Binary (wie templates)
+								print(42);
+								print("hello");
+								print(true);
+								```
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Dynamic dispatch (type erasure)
+								```rust
+								// Diese Funktion existiert nur 1 mal
+								fn print(text: &dyn ToString) {
+									println!("{}", text.to_string());
+								}
+
+								print(&42);
+								print(&"hello");
+
+								let boolean = true;
+								// Fat-Pointer: (data, vtable)
+								let to_string: &dyn ToString = &boolean;
+								print(to_string);
+								```
+
+								**C++: Virtual Methods**
+							</script>
+						</div>
+					</section>
+
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Trait-Chaining
+
+								```rust
+								trait Named {
+									fn name(&self) -> &str;
+								}
+
+								trait SayName {
+									fn say_name(&self);
+								}
+
+								// Wer "Named" implementiert bekommt `SayName` umsonst.
+								impl<T: Named> SayName for T {
+									fn say_name(&self) {
+										println!("{}", self.name())
+									}
+								}
+								```
+							</script>
+						</div>
+					</section>
+					<section>
+						<div data-markdown>
+							<script data-markdown type="text/template">
+								### Trait-Chaining
+
+								```rust
+								impl Named for Duck {
+									fn name(&self) -> &str {
+										&self.name
+									}
+								}
+
+								let donald = Duck::default();
+								donalt.say_name(); // "Donald"
+								```
+							</script>
+						</div>
+					</section>
+				</section>
+
 
 				<section>
 					<h2>Themen</h2>
@@ -729,24 +894,16 @@
 						<li>Reihenfolge von Funktionen</li>
 						<li>YOU CANNOT ACTUALLY MAKE STUFF CONST LIKE IN C++</li>
 						<li>"Variable Bindings"</li>
-						<li>Chaining Traits (e.g. Display → ToString)</li>
 						<li>Inheritance vs. Traits (IntoUrl example)</li>
 						<li>Const by default</li>
-						<li>Clone trait vs. other stuff</li>
-						<li>Trennung zwischen Functionality and Data</li>
 						<li>constexpr vs. const</li>
-						<li>Trait-Based generics vs. Templates</li>
-						<li>Monomorphisation and dynamic dispatch</li>
 						<li>Hygienic Macros</li>
 						<li>Procedural Macros ←→ Meta-Classes, Reflection?</li>
-						<li>Modern C++</li>
 						<li>RAII</li>
 						<li>shared_ptr ←→ Rc/Arc </li>
 						<li>Zero Cost Abstractions</li>
-						<li>Ownership and Borrowing</li>
 						<li>circular data structures impossible without unsafe → Pin</li>
 						<li>Algorithms, Ranges, Rust-Iterators (Collect Result<Vec> form Vec<Result>) (show full type name)</li>
-						<li>Operator overloading</li>
 						<li>Error-Handling</li>
 						<li>Coroutines/Generators</li>
 						<li>Traits/Concepts</li>
